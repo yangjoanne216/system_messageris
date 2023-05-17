@@ -42,8 +42,13 @@ int main(int argc, char const *argv[])
 
     client_reponse = (char*)malloc(sizeof(char)*100);
     while(1){
-        scanf("%s",client_reponse);
-        send(client_socket,client_reponse,sizeof(client_reponse),0);
+        fgets(client_reponse,100,stdin);
+        //Remove line breaks from strings
+        client_reponse[strlen(client_reponse) - 1] = '\0';
+        //scanf("%[^\n]",client_reponse);
+        //scanf("%s",client_reponse);
+        //printf("%s",client_reponse);
+        send(client_socket,client_reponse,strlen(client_reponse),0);
         if(strncmp(client_reponse, "quit", 4) == 0)
         {
             printf("log out！\n");

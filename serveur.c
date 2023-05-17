@@ -25,7 +25,7 @@ pthread_t threads[NUM_MAX];
 
 typedef struct{
 
-    char name[10];
+    char name[100];
     int client_socket; // TODO : for the gestion of message for a client
 }CLIENT;
 
@@ -147,10 +147,10 @@ void *se_connecter_client(void *arg){
             if(strlen(clients[id].name)==0){
                 send(clients[id].client_socket, ask_name,sizeof(ask_name),0);
                 read_size=recv(clients[id].client_socket,client_reponse,100,0);
-                client_reponse[read_size] = '\0';
+                //client_reponse[read_size] = '\0';
                 //enter the information of this clients
                 sprintf(clients[id].name,"%s",client_reponse);
-                sprintf(serveur_reponse,"id= %ld, %s is　comming",id,clients[id].name);
+                sprintf(serveur_reponse,"id= %ld, %s is comming",id,clients[id].name);
                 printf("%s\n",serveur_reponse);
                 //Notify other clients of the client's arrival
                 for(int i = 0; i<NUM_MAX;i++){
@@ -163,7 +163,7 @@ void *se_connecter_client(void *arg){
             }
         
         read_size= recv(clients[id].client_socket,client_reponse,100,0);
-        client_reponse[read_size] = '\0';
+        //client_reponse[read_size] = '\0';
 
         //this client is out of connexion or erro when read o
         if(read_size<0){
