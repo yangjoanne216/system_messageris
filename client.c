@@ -1,12 +1,12 @@
-/*
+/*************************************************************
 File name : client.c
 Author : Ningxin YE, Yiqing CHEN, Yang YANG
 Class : L3 MIAGE(université paris Dauphine_PSL)
 Day : 2023/5/15
 Compile command line : gcc client.c -pthread -o client
-The command line for running the program ： ./client 10.188.248.245
+The command line for running the program ： ./client 172.20.10.5
 For stop the programme : ctrl + c
-*/
+**************************************************************/
 #include<stdio.h>
 #include<unistd.h>
 #include<sys/types.h>
@@ -20,12 +20,14 @@ int creat_client_socket(long * client_socket);
 int  connect_serveur(int client_socket,char* argv);
 void *client_recevie(void *socket);
 
+
 int main(int argc, char const *argv[])
 {
     if(argc<2){
         printf("use : ./client ip_address");
         exit(-1);
     }
+
     long client_socket = -1;
     pthread_t thread_client;
     //const char *ip_adresse = argv[1];
@@ -42,10 +44,11 @@ int main(int argc, char const *argv[])
 
     client_reponse = (char*)malloc(sizeof(char)*100);
     while(1){
-        fgets(client_reponse,100,stdin);
+        //fgets(client_reponse,100,stdin);
+        scanf("%[^\n]",client_reponse);
         //Remove line breaks from strings
         client_reponse[strlen(client_reponse) - 1] = '\0';
-        //scanf("%[^\n]",client_reponse);
+        
         //scanf("%s",client_reponse);
         //printf("%s",client_reponse);
         send(client_socket,client_reponse,strlen(client_reponse),0);
@@ -104,7 +107,6 @@ void *client_recevie(void *socket){
     char serveur_reponse[100] ={0};
     while(1){
         int reponse_size=recv((int)client_socket,serveur_reponse,100,0);
-        //serveur_reponse[reponse_size]="\0";
         printf("%s\n",serveur_reponse);
     }
     pthread_exit(NULL);
