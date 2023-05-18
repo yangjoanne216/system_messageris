@@ -19,15 +19,12 @@ int const connect_time_max=3;
 int creat_client_socket(long * client_socket);
 int  connect_serveur(int client_socket,char* argv);
 void *client_recevie(void *socket);
-
-
 int main(int argc, char const *argv[])
 {
     if(argc<2){
         printf("use : ./client ip_address");
         exit(-1);
     }
-
     long client_socket = -1;
     pthread_t thread_client;
     //const char *ip_adresse = argv[1];
@@ -44,17 +41,16 @@ int main(int argc, char const *argv[])
 
     client_reponse = (char*)malloc(sizeof(char)*100);
     while(1){
-        //fgets(client_reponse,100,stdin);
-        scanf("%[^\n]",client_reponse);
+        fgets(client_reponse,100,stdin);
+        //scanf("%[^\n]",client_reponse);
         //Remove line breaks from strings
         client_reponse[strlen(client_reponse) - 1] = '\0';
-        
-        //scanf("%s",client_reponse);
-        //printf("%s",client_reponse);
+       
         send(client_socket,client_reponse,strlen(client_reponse),0);
         if(strncmp(client_reponse, "quit", 4) == 0)
-        {
+        {   
             printf("log out！\n");
+            pthread_cancel(thread_client);  // 关闭接收线程
             break;
         }
     }

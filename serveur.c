@@ -15,6 +15,7 @@ For stop the programme : ctrl + c
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <signal.h> 
 #define NUM_MAX 5
 
 int creat_socket();
@@ -24,6 +25,7 @@ void send_message_to_other(long id, char *serveur_reponse, char *sperotor);
 void first_connect(long id, char *client_reponse, char *serveur_reponse);
 void delet_client_information(long id);
 int give_time(char *buf);
+void sigintHandler(int sig_num);
 
 pthread_t threads[NUM_MAX];
 pthread_mutex_t waitMemset;
@@ -42,6 +44,8 @@ char ask_name[30] = "what's your name?";
 
 int main(int argc, char const *argv[])
 {
+    // 添加信号处理
+    signal(SIGINT, sigintHandler);
     /*Create socket*/
     int sev_socket = creat_socket();
     int client_socket;
@@ -145,11 +149,10 @@ void *se_connecter_client(void *arg)
     long id = (long)arg;
     int read_size = 0;
     char sperotor[30] = "----------------\n";
-    while (1&&clients[id].client_socket!=0)
+    while (clients[id].client_socket!=0)
     {
-        char client_reponse[1000] = {0};
-        char serveur_reponse[1000] = {0};
-        // if a client have connected
+        char client_reponse[100] = {0};
+        char serveur_reponse[100] = {0};
             // if the client hasn't a name(the fist time of connexion)
             if (strlen(clients[id].name) == 0)
             {
@@ -193,8 +196,11 @@ void send_message_to_other(long id, char *serveur_reponse, char *sperotor)
     {
         if (i != id && clients[i].client_socket != 0)
         {
+             char message_to_send[1000];  // 创建一个新的缓冲区
+            strcpy(message_to_send, serveur_reponse);  // 复制要发送的消息到新的缓冲区
+
             if(sperotor!=NULL){ send(clients[i].client_socket, sperotor, strlen(sperotor), 0);}
-            send(clients[i].client_socket, serveur_reponse, strlen(serveur_reponse), 0);
+            send(clients[i].client_socket, message_to_send, strlen(message_to_send), 0);
         }
     }
     memset(serveur_reponse,0,strlen(serveur_reponse));
@@ -235,6 +241,21 @@ int give_time(char *buf)
             tt->tm_min, tt->tm_sec);
     buf[strlen(buf)-1]=0;
     return 0;
+}
+
+void sigintHandler(int sig_num)
+{
+    printf("Server is shutting down. Closing all client connections.\n");
+    for (int i = 0; i < NUM_MAX; i++)
+    {
+        if (clients[i].client_socket != 0)
+            close(clients[i].client_socket);
+    }
+    pthread_mutex_destroy(&waitMemset);
+    for(int i = 0; i < NUM_MAX;i++){
+        pthread_cancel(threads[i]);
+    }
+    exit(0);
 }
 
 
