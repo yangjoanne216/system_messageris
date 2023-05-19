@@ -13,18 +13,15 @@ For stop the programme : ctrl + c
 #include<stdlib.h>
 #include<sys/socket.h>
 #include<string.h>
-#include<arpa/inet.h>
 #include<pthread.h>
+#include <sys/un.h> 
+
 int const connect_time_max=3;
 int creat_client_socket(long * client_socket);
-int  connect_serveur(int client_socket,char* argv);
+int  connect_serveur(int client_socket);
 void *client_recevie(void *socket);
 int main(int argc, char const *argv[])
 {
-    if(argc<2){
-        printf("use : ./client ip_address");
-        exit(-1);
-    }
     long client_socket = -1;
     pthread_t thread_client;
     //const char *ip_adresse = argv[1];
@@ -32,8 +29,8 @@ int main(int argc, char const *argv[])
     //create socket error
     if(creat_client_socket(&client_socket)<0)
         return -1;
-    //connect error
-    if(connect_serveur(client_socket,argv[1])<0)
+     //connect error
+    if(connect_serveur(client_socket) <0)
         return -1;
     
     pthread_create(&thread_client, NULL, client_recevie, (void *)client_socket);
@@ -59,7 +56,7 @@ int main(int argc, char const *argv[])
 }
 
 int creat_client_socket(long * client_socket){
-    *client_socket = socket(AF_INET,SOCK_STREAM,0);
+    *client_socket = socket(AF_UNIX,SOCK_STREAM,0);
     if(client_socket<0){
         perror("error when creat client's socket");
         exit(-1);
@@ -69,12 +66,10 @@ int creat_client_socket(long * client_socket){
     return 0;
 }
 
-int  connect_serveur(int client_socket,char* argv){
-    struct sockaddr_in serv_addr;
-    memset(&serv_addr, 0, sizeof(struct sockaddr_in));
-    serv_addr.sin_family = AF_INET;
-    serv_addr.sin_port = 8080;
-    serv_addr.sin_addr.s_addr = inet_addr(argv);
+int  connect_serveur(int client_socket){
+    struct sockaddr_un serv_addr={0};
+    serv_addr.sun_family = AF_UNIX;
+    strcpy(serv_addr.sun_path, "./MySock");	// Chemin vers fichier socket
     int connect_time = 3;
 
     while(connect_time--){
@@ -104,6 +99,7 @@ void *client_recevie(void *socket){
     while(1){
         int reponse_size=recv((int)client_socket,serveur_reponse,100,0);
         printf("%s\n",serveur_reponse);
+        memset(serveur_reponse, 0, sizeof(serveur_reponse));
     }
     pthread_exit(NULL);
     

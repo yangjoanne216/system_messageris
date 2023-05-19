@@ -5,7 +5,7 @@ Class : L3 MIAGE(université paris Dauphine_PSL)
 Day : 2023/5/15
 Compile command line : gcc serveur.c -o serveur
 The command line for running the program ：
-For stop the programme : ctrl + c
+For stop the programme : ctrl +z（）or ctrl + c
 *********************************************************/
 #include <stdio.h>
 #include <stdlib.h>
@@ -14,6 +14,7 @@ For stop the programme : ctrl + c
 #include <pthread.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <sys/un.h> 
 #include <arpa/inet.h>
 #include <signal.h> 
 #define NUM_MAX 5
@@ -54,7 +55,7 @@ int main(int argc, char const *argv[])
     while (1)
     {
         client_socket = accept_client(sev_socket);
-        printf("----------------------------------------\n");
+        printf("***********************************\n");
     }
     // printf("all the message");
     // close the socket
@@ -65,34 +66,38 @@ int main(int argc, char const *argv[])
     }
     pthread_mutex_destroy(&waitMemset);
     close(sev_socket);
+    unlink("MySock");
     return 0;
 }
 
 int creat_socket()
 {
+    unlink("Mysock");
+    // Initialisation struct addr serveur
+    struct sockaddr_un addr ={0}; // Address Family UNIX
+    memset(&addr, 0, sizeof(struct sockaddr_un)); // Chemin vers fichier socket local
+    addr.sun_family = AF_UNIX;	
+    strcpy(addr.sun_path, "./MySock");	
+
+    // Creation socket serveur
     int sev_socket = -1;
-    sev_socket = socket(AF_INET, SOCK_STREAM, 0);
+    sev_socket = socket(AF_UNIX, SOCK_STREAM, 0);
     if (sev_socket < 0)
     {
         perror("error when we creat socket!!!\n");
         exit(1);
     }
 
-    struct sockaddr_in addr;
-    memset(&addr, 0, sizeof(struct sockaddr_in));
-
-    addr.sin_family = AF_INET;
-    addr.sin_port = 8080;
-    addr.sin_addr.s_addr = 0;
-
-    int test_bind = bind(sev_socket, (struct sockaddr *)&addr, sizeof(struct sockaddr));
+    
+    // Connection de la socket a l'addresse serveur
+    int test_bind = bind(sev_socket, (struct sockaddr *)&addr, sizeof(addr));
 
     if (test_bind < 0)
     {
         perror("error when bind!\n");
         exit(-1);
     }
-
+    // Socket en attente de connexion (a l'ecoute),
     int test_listen = listen(sev_socket, NUM_MAX);
     if (test_listen < 0)
     {
@@ -105,10 +110,9 @@ int creat_socket()
 
 int accept_client(int sev_socket)
 {
-    struct sockaddr_in client_addr;
-    int addrlen = sizeof(client_addr);
-    memset(&client_addr, 0, sizeof(struct sockaddr_in));
-
+    // Initialisation struct addr client
+    struct sockaddr_un client_addr = {0};
+    socklen_t addrlen = sizeof(client_addr);
     printf("Waiting for client connection...\n");
     int client_socket = accept(sev_socket, (struct sockaddr *)&client_addr, &addrlen);
     if (client_socket < 0)
@@ -133,7 +137,7 @@ int accept_client(int sev_socket)
         clients[client_index].client_socket = client_socket;
         pthread_create(&threads[client_index], NULL, se_connecter_client, (void *)(intptr_t)client_index);
         pthread_detach(threads[client_index]);
-        printf("Connected with client at address: %s\n", inet_ntoa(client_addr.sin_addr));
+        //printf("Connected with client at address: %s\n", inet_ntoa(client_addr.sin_addr));
     }
     else
     {
@@ -255,6 +259,7 @@ void sigintHandler(int sig_num)
     for(int i = 0; i < NUM_MAX;i++){
         pthread_cancel(threads[i]);
     }
+    unlink("MySock");
     exit(0);
 }
 
