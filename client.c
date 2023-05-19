@@ -98,6 +98,14 @@ void *client_recevie(void *socket){
     char serveur_reponse[100] ={0};
     while(1){
         int reponse_size=recv((int)client_socket,serveur_reponse,100,0);
+        serveur_reponse[reponse_size] = '\0';  // 确保字符串正确地结束
+        // 如果收到服务器关闭的特殊消息，就退出
+        if (strcmp(serveur_reponse, "SERVER_EXIT") == 0) {
+            printf("Server is closing. Exiting client.\n");
+            close(client_socket);
+            exit(0);
+        }
+
         printf("%s\n",serveur_reponse);
         memset(serveur_reponse, 0, sizeof(serveur_reponse));
     }

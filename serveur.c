@@ -281,18 +281,19 @@ void write_message_in_doc(){
 void sigintHandler(int sig_num)
 {
     write_message_in_doc();
-    printf("Server is shutting down. \n Closing all client connections. \n You can find the record of this conversation in message.txt\n");
-    for (int i = 0; i < NUM_MAX; i++)
-    {
-        if (clients[i].client_socket != 0)
-            close(clients[i].client_socket);
+    // 向所有客户端发送一个表示服务器关闭的特殊消息
+    for (int i = 0; i < NUM_MAX; i++) {
+        if (clients[i].client_socket != 0) {
+            write(clients[i].client_socket, "SERVER_EXIT" , strlen("SERVER_EXIT"));
+        }
     }
+    printf("Server is shutting down. \n Closing all client connections. \n You can find the record of this conversation in message.txt\n");
     pthread_mutex_destroy(&waitMemset);
     for(int i = 0; i < NUM_MAX;i++){
         pthread_cancel(threads[i]);
     }    
     unlink("MySock");
-    exit(0);
+    exit(sig_num);
 }
 
 
