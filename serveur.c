@@ -27,16 +27,21 @@ void first_connect(long id, char *client_reponse, char *serveur_reponse);
 void delet_client_information(long id);
 int give_time(char *buf);
 void sigintHandler(int sig_num);
+void write_message_in_doc();
 
 pthread_t threads[NUM_MAX];
 pthread_mutex_t waitMemset;
+#define MAX_MESSAGES 1000
+#define MAX_MESSAGE_LENGTH 100
+
 
 typedef struct
 {
     char name[100];
     int client_socket;
-    char **messages;
-    // Etape 2 : for the gestion of message for a client
+    char messages[MAX_MESSAGES][MAX_MESSAGE_LENGTH];
+    int message_count;
+     // Etape 2 : for the gestion of message for a client
 } CLIENT;
 
 CLIENT clients[NUM_MAX] = {0};
@@ -185,6 +190,12 @@ void *se_connecter_client(void *arg)
                 printf("receive of the message of client %s : %s \n ", clients[id].name, client_reponse);
                 sprintf(serveur_reponse, "%s %s : %s", messageTime, clients[id].name, client_reponse);
                 send_message_to_other(id,serveur_reponse,sperotor);
+                
+                //将传送的message存入client的数组中
+                if (clients[id].message_count < MAX_MESSAGES) {
+                strncpy(clients[id].messages[clients[id].message_count], client_reponse, MAX_MESSAGE_LENGTH);
+                clients[id].message_count++;
+            }
             }
         }
     
@@ -247,9 +258,30 @@ int give_time(char *buf)
     return 0;
 }
 
+void write_message_in_doc(){
+    FILE *file = fopen("messages.txt", "w");
+    if (file == NULL) {
+        perror("Error opening file");
+        exit(1);
+    }
+
+    for (int i = 0; i < NUM_MAX; i++)
+    {
+        if (clients[i].client_socket != 0) {
+            fprintf(file, "Messages from %s:\n", clients[i].name);
+            for (int j = 0; j < clients[i].message_count; j++) {
+                fprintf(file, "%s\n", clients[i].messages[j]);
+            }
+            fprintf(file, "\n");
+        }
+    }
+    fclose(file);
+}
+
 void sigintHandler(int sig_num)
 {
-    printf("Server is shutting down. Closing all client connections.\n");
+    write_message_in_doc();
+    printf("Server is shutting down. \n Closing all client connections. \n You can find the record of this conversation in message.txt\n");
     for (int i = 0; i < NUM_MAX; i++)
     {
         if (clients[i].client_socket != 0)
@@ -258,7 +290,7 @@ void sigintHandler(int sig_num)
     pthread_mutex_destroy(&waitMemset);
     for(int i = 0; i < NUM_MAX;i++){
         pthread_cancel(threads[i]);
-    }
+    }    
     unlink("MySock");
     exit(0);
 }
