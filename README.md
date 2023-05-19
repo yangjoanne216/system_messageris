@@ -2,7 +2,7 @@
 
 ## **Presentation**
 
-Ce logiciel offre une simulation de salon de discussion de groupe. Tous les clients ont leur propre composée d'un identifiant unique et d'un nom individuel. Ce nom est déterminé par le premier message que chaque utilisateur envoie au serveur après avoir établi une connexion. Lorsque ctrl +c quitte le serveur, les messages envoyés par les clients qui sont encore en ligne à ce moment-là sont écrits dans messages.txt.
+Ce logiciel offre une simulation de salon de discussion de groupe. Tous les clients ont leur propre profil, composé d'un identifiant unique et d'un nom individuel. Ce nom est déterminé par le premier message que chaque utilisateur envoie au serveur après avoir établi une connexion. Lorsque l'on quitte le serveur en utilisant ctrl +c, les messages envoyés par les clients qui sont encore en ligne à ce moment-là sont enregistrés dans un fichier nommé messages.txt.
 
 ## **Utilisation**
 
@@ -26,33 +26,34 @@ Exécution d'un client
 ./client
 ```
 
-### **3.Command to exit the program（important）**
+### **3.Commande pour quitter le programme（important)**
 ### Quitter le client : `quit` 
 ### Quitter le serveur : `ctrl + c`
 ### Le client passe en mode édit_only[^6] : `ctrl+c`
-notre recommandation est de 'ctrl+c' directement dans le serveur et tous les clients seront fermés automatiquement [^2]. 
+Nous recommandons d'utiliser 'ctrl+c' directement sur le serveur, tous les clients se fermeront automatiquement. [^2]. 
 
-## Note
-[^1].*Il est possible d'avoir plusieurs terminaux ouverts sur un même appareil informatique. Un terminal exécute le code du serveur, tandis qu'un ou plusieurs terminaux exécutent le code du client. Le rôle du serveur est de traiter les messages envoyés par le client. Ainsi, veuillez ne pas saisir d'informations sur le terminal du serveur, mais plutôt sur celui du client.*
+## Attention
+[^1].*Sur un même appareil informatique, il est possible d'avoir plusieurs terminaux ouverts. Un terminal exécute le code du serveur, tandis que d'autres terminaux peuvent exécuter le code du client. Le rôle du serveur est de traiter les messages envoyés par les clients. Par conséquent, veuillez ne pas entrer d'informations sur le terminal du serveur, mais plutôt sur ceux des clients.*
 
-[^2]*En ce qui concerne la quitter du programme, notre recommandation est de 'ctrl+c' directement dans le serveur et tous les clients seront fermés automatiquement. L'avantage de cette approche est que tous les messages envoyés par l'utilisateur sont enregistrés dans le fichier message.txt. Il est bien sûr possible de quitter un seul client en tapant 'quit' dans le client, mais les messages du client qui est sorti prématurément ne seront pas écrits dans messages.txt.*
+[^2]*En ce qui concerne la fermeture du programme, notre recommandation est de taper 'ctrl+c' directement dans le serveur, et tous les clients se fermeront automatiquement. L'avantage de cette approche est que tous les messages envoyés par les utilisateurs sont enregistrés dans le fichier messages.txt. Il est bien sûr possible de fermer un seul client en tapant 'quit' dans ce dernier, mais les messages du client qui se déconnecte prématurément ne seront pas enregistrés dans le fichier messages.txt.*
 
-[^3]*Afin de tester le code sans interférence avec l'instabilité du réseau, nous utilisons des sockets Unix, de sorte que la communication client-serveur ne peut s'effectuer que sur un seul appareil. Il n'est pas possible d'exécuter notre code sur plusieurs appareils.*
+[^3]*Pour tester le code sans interférence due à l'instabilité du réseau, nous utilisons des sockets Unix, de sorte que la communication entre le client et le serveur ne peut s'effectuer que sur un seul appareil. Il n'est donc pas possible d'exécuter notre code sur plusieurs appareils.*
 
+[^4]*Il est recommandé d'exécuter d'abord `./serveur`, puis d'exécuter `./client`, sinon la connexion client échouera facilement.*
 
-[^4]*Il est recommandé d'exécuter d'abord `./serveur`, puis d'exécuter `./client`, sinon la connexion client échouera facilement*
+[^5]*Si vous ouvrez accidentellement deux serveurs en même temps, veuillez vous déconnecter des deux serveurs, puis vous connecter à un nouveau serveur.*
 
-[^5]*Si vous ouvrez accidentellement deux serveurs en même temps, veuillez vous déconnecter des deux serveurs, puis vous connecter à un nouveau serveur*
+[^6]*Mode edit_only : Les messages envoyés par d'autres clients ne sont pas affichés lorsque le client est en mode edit_only (pour répondre aux exigences de l'étape 7 du thème du projet).*
 
-[^6]mode édit_only :Messages sent by other clients are not displayed while the client is in edit_only_mode(Pour répondre aux exigences de l'étape 7 du thème du projet)
+*Entrer en mode edit_only : `ctrl+c` *
 
-enter the edit_only_mode : `ctrl+c` , 
+*Sortir du mode edit_only : `envoyez un message`*
 
-exit edit_only_mode : `sending a message`
+[^7]*Le serveur accepte jusqu'à NUM_MAX clients en même temps.Dans notre programme, ce nombre est 10 dans notre programme.*
 
-[^7]Le serveur accepte jusqu'à NUM_MAX clients en même temps.Dans notre programme, ce nombre est 10
+[^8]*Merci de ne pas envoyer plus de 100 caractères dans un seul message. 100 est la longueur maximale des messages acceptée, telle que nous l'avons définie dans le programme.*
 
-[^8]Ne pas envoyer plus de 100 caractères dans un seul message
+[^9]*Le code contient des commentaires très détaillés pour vous aider en cas de difficultés à le compiler ou à l'utiliser.*
 
 ## Capture d'écran du programme en cours de fonctionnement
 Le terminal en haut à gauche exécute le serveur
@@ -63,6 +64,6 @@ Si vous avez des questions, veuillez contacter:
 
 Yang YANG(yang.yang2@dauphine.eu)
 
-Ningxin Ye(ningxin.ye@dauphine.eu)
+Ningxin YE(ningxin.ye@dauphine.eu)
 
-Yiqing Chen(yiqing.chen@dauphine.eu)
+Yiqing CHEN(yiqing.chen@dauphine.eu)
