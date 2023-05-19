@@ -45,7 +45,9 @@ notre recommandation est de 'ctrl+c' directement dans le serveur et tous les cli
 [^5]*Si vous ouvrez accidentellement deux serveurs en même temps, veuillez vous déconnecter des deux serveurs, puis vous connecter à un nouveau serveur*
 
 [^6]mode édit_only :Messages sent by other clients are not displayed while the client is in edit_only_mode(Pour répondre aux exigences de l'étape 7 du thème du projet)
+
 enter the edit_only_mode : `ctrl+c` , 
+
 exit edit_only_mode : `sending a message`
 
 [^7]Le serveur accepte jusqu'à NUM_MAX clients en même temps.Dans notre programme, ce nombre est 10
