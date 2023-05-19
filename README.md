@@ -2,7 +2,7 @@
 
 ## **Presentation**
 
-Ce logiciel offre une simulation de salon de discussion de groupe. Tous les clients ont leur propre composée d'un identifiant unique et d'un nom individuel. Ce nom est déterminé par le premier message que chaque utilisateur envoie au serveur après avoir établi une connexion. Lorsque ctrl +c quitte le serveur, les messages envoyés par les clients qui sont encore en ligne à ce moment-là sont écrits dans messageris.txt.
+Ce logiciel offre une simulation de salon de discussion de groupe. Tous les clients ont leur propre composée d'un identifiant unique et d'un nom individuel. Ce nom est déterminé par le premier message que chaque utilisateur envoie au serveur après avoir établi une connexion. Lorsque ctrl +c quitte le serveur, les messages envoyés par les clients qui sont encore en ligne à ce moment-là sont écrits dans messages.txt.
 
 ## **Utilisation**
 
@@ -33,7 +33,7 @@ Exécution d'un client
 notre recommandation est de 'ctrl+c' directement dans le serveur et tous les clients seront fermés automatiquement [^2]. 
 
 ## Note
-[^1].*Vous pouvez avoir plusieurs terminaux ouverts sur un seul appareil informatique, avec un terminal exécutant le code serveur et un ou plusieurs terminaux exécutant le code client. Le serveur est utilisé pour traiter les informations envoyées par le client de radiodiffusion de collecte。veuillez donc ne pas saisir d'informations sur le terminal serveur. Veuillez donc ne pas saisir d'informations sur le terminal du serveur, mais plutôt sur celui du client.*
+[^1].*Il est possible d'avoir plusieurs terminaux ouverts sur un même appareil informatique. Un terminal exécute le code du serveur, tandis qu'un ou plusieurs terminaux exécutent le code du client. Le rôle du serveur est de traiter les messages envoyés par le client. Ainsi, veuillez ne pas saisir d'informations sur le terminal du serveur, mais plutôt sur celui du client.*
 
 [^2]*En ce qui concerne la quitter du programme, notre recommandation est de 'ctrl+c' directement dans le serveur et tous les clients seront fermés automatiquement. L'avantage de cette approche est que tous les messages envoyés par l'utilisateur sont enregistrés dans le fichier message.txt. Il est bien sûr possible de quitter un seul client en tapant 'quit' dans le client, mais les messages du client qui est sorti prématurément ne seront pas écrits dans messages.txt.*
 
