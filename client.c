@@ -54,7 +54,7 @@ int main(int argc, char const *argv[])
         send(client_socket,client_reponse,strlen(client_reponse),0);
         if(strncmp(client_reponse, "quit", 4) == 0)
         {   
-            printf("log out！\n");
+            printf("logged out！\n");
             pthread_cancel(thread_client);  // 关闭接收线程
             break;
         }
@@ -64,7 +64,7 @@ int main(int argc, char const *argv[])
         // 显示所有待显示的消息
         if(pendingMessagesCount!=0)
         {
-             printf("-----Exiting edit-only mode.--------\nThe following are all the messages you received during the edit mode: \n");
+             printf("-----Exiting edit-only mode.--------\nThe following are all the messages you received during the edit only mode: \n");
             for (int i = 0; i < pendingMessagesCount; i++) 
             {
                 printf("%s\n", pendingMessages[i]);
@@ -87,21 +87,12 @@ void handle_sigint(int sig) {
     if (edit_only_mode) {
         printf("-----Edit only mode (ctrl+c)--------\nenter your message: \n");
     } 
-    // else {
-    //     // 如果切换到读模式，显示所有待显示的消息
-    //     //printf("-----Exiting edit-only mode.--------\nThe following are all the messages you received during the edit mode: \n");
-    //     for (int i = 0; i < pendingMessagesCount; i++) {
-    //         printf("%s\n", pendingMessages[i]);
-    //     }
-    //     // 清空待显示消息
-    //     pendingMessagesCount = 0;
-    // }
 }
 
 int creat_client_socket(long * client_socket){
     *client_socket = socket(AF_UNIX,SOCK_STREAM,0);
     if(client_socket<0){
-        perror("error when creat client's socket");
+        perror("Client socket creation error.");
         exit(-1);
         
     }
@@ -123,10 +114,10 @@ int  connect_serveur(int client_socket){
         break;
     }
     else{
-        printf("error when we try to connect serveur. try the %d time\n",connect_time_max-connect_time);
+        printf("Connection error. Retry attempt: %d\n",connect_time_max-connect_time);
         usleep(8000);
         if(connect_time ==0)
-        {   perror("connet out of time\n");
+        {   perror("Connection timed out.\n");
             exit(-1);
         }
         

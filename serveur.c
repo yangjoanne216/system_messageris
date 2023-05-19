@@ -3,7 +3,7 @@ File name : serveur.c
 Author : Ningxin YE, Yiqing CHEN, Yang YANG
 Class : L3 MIAGE(université paris Dauphine_PSL)
 Day : 2023/5/15
-Compile command line : gcc serveur.c -o serveur
+Compile command line : gcc serveur.c -pthread -o serveur
 The command line for running the program ：
 For stop the programme : ctrl +z（）or ctrl + c
 *********************************************************/
@@ -17,7 +17,7 @@ For stop the programme : ctrl +z（）or ctrl + c
 #include <sys/un.h> 
 #include <arpa/inet.h>
 #include <signal.h> 
-#define NUM_MAX 5
+#define NUM_MAX 10
 
 int creat_socket();
 int accept_client(int sev_socket);
@@ -89,7 +89,7 @@ int creat_socket()
     sev_socket = socket(AF_UNIX, SOCK_STREAM, 0);
     if (sev_socket < 0)
     {
-        perror("error when we creat socket!!!\n");
+        perror("Socket creation error!\n");
         exit(1);
     }
 
@@ -99,14 +99,14 @@ int creat_socket()
 
     if (test_bind < 0)
     {
-        perror("error when bind!\n");
+        perror("Binding error!\n");
         exit(-1);
     }
     // Socket en attente de connexion (a l'ecoute),
     int test_listen = listen(sev_socket, NUM_MAX);
     if (test_listen < 0)
     {
-        perror("error whe listen");
+        perror("Listening error!");
         exit(-1);
     }
     printf("The server has been successfully created!\n");
@@ -172,11 +172,11 @@ void *se_connecter_client(void *arg)
             }
             read_size = recv(clients[id].client_socket, client_reponse, 100, 0);
             client_reponse[read_size] = '\0';
-            // this client is out of connexion or erro when read o
+            // this client disconnected or erro when read o
             if (read_size <= 0||strncmp(client_reponse, "quit", 4) == 0)
             {
-                printf("%s is out of connexion\n", clients[id].name);
-                sprintf(serveur_reponse,"%s is out of connexion\n",clients[id].name);
+                printf("%s(ID = %ld) disconnected\n", clients[id].name,id);
+                sprintf(serveur_reponse,"%s disconnected\n",clients[id].name);
                 send_message_to_other(id,serveur_reponse,sperotor);
                 delet_client_information(id);
                 pthread_exit(NULL);
@@ -187,7 +187,7 @@ void *se_connecter_client(void *arg)
             {
                 char messageTime[100] = {0};
                 give_time(messageTime);
-                printf("receive of the message of client %s : %s \n ", clients[id].name, client_reponse);
+                printf("Message received from clien %s(ID=%ld) : %s \n ",clients[id].name,id, client_reponse);
                 sprintf(serveur_reponse, "%s %s : %s", messageTime, clients[id].name, client_reponse);
                 send_message_to_other(id,serveur_reponse,sperotor);
                 
@@ -232,7 +232,7 @@ void first_connect(long id, char *client_reponse, char *serveur_reponse)
     // enter the information of this clients
     sprintf(clients[id].name, "%s", client_reponse);
     pthread_mutex_lock(&waitMemset);
-    sprintf(serveur_reponse, "$%s(id=%ld) is comming!", clients[id].name, id);
+    sprintf(serveur_reponse, "Client $%s(ID=%ld) has entered the session.", clients[id].name, id);
     serveur_reponse[strlen(serveur_reponse)] = '\0';
     printf("%s\n", serveur_reponse);
      pthread_mutex_unlock(&waitMemset);
