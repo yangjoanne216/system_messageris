@@ -45,7 +45,7 @@ Nous recommandons d'utiliser 'ctrl+c' directement sur le serveur, tous les clien
 
 [^6]*Mode edit_only : Les messages envoyés par d'autres clients ne sont pas affichés lorsque le client est en mode edit_only (pour répondre aux exigences de l'étape 7 du thème du projet).*
 
-*Entrer en mode edit_only : `ctrl+c` *
+*Entrer en mode edit_only : `ctrl+c`*
 
 *Sortir du mode edit_only : `envoyez un message`*
 
@@ -59,7 +59,7 @@ Nous recommandons d'utiliser 'ctrl+c' directement sur le serveur, tous les clien
 Le terminal en haut à gauche exécute le serveur
 ![caputure](caputure.png "caputure d'écran")
 
-## contact
+## Contact
 Si vous avez des questions, veuillez contacter:
 
 Yang YANG(yang.yang2@dauphine.eu)
