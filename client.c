@@ -5,7 +5,9 @@ Class : L3 MIAGE(université paris Dauphine_PSL)
 Day : 2023/5/15
 Compile command line : gcc client.c -pthread -o client
 The command line for running the program ： ./client 172.20.10.5
-For stop the programme : ctrl + c
+For stop the programme : quit
+
+ctrl + c met le programme en mode édition (les messages acceptés ne sont pas affichés pendant ce temps)
 **************************************************************/
 #include<stdio.h>
 #include<unistd.h>
@@ -16,13 +18,20 @@ For stop the programme : ctrl + c
 #include<pthread.h>
 #include <sys/un.h> 
 
+#define MESSAGE_SIZE 1000
 int const connect_time_max=3;
+int edit_only_mode = 0;  // 标记是否处于写模式
+char pendingMessages[MESSAGE_SIZE][MESSAGE_SIZE];  // 存储待显示的消息
+int pendingMessagesCount = 0;  // 存储待显示消息的数量
+void handle_sigint(int sig);
+long client_socket = -1;  //变成全局变量便于访问
+
 int creat_client_socket(long * client_socket);
 int  connect_serveur(int client_socket);
 void *client_recevie(void *socket);
 int main(int argc, char const *argv[])
 {
-    long client_socket = -1;
+    signal(SIGINT, handle_sigint); 
     pthread_t thread_client;
     //const char *ip_adresse = argv[1];
     char *client_reponse;
@@ -42,7 +51,6 @@ int main(int argc, char const *argv[])
         //scanf("%[^\n]",client_reponse);
         //Remove line breaks from strings
         client_reponse[strlen(client_reponse) - 1] = '\0';
-       
         send(client_socket,client_reponse,strlen(client_reponse),0);
         if(strncmp(client_reponse, "quit", 4) == 0)
         {   
@@ -50,9 +58,44 @@ int main(int argc, char const *argv[])
             pthread_cancel(thread_client);  // 关闭接收线程
             break;
         }
+        // 新增的代码开始
+        edit_only_mode = 0;  // 退出写模式
+
+        // 显示所有待显示的消息
+        if(pendingMessagesCount!=0)
+        {
+             printf("-----Exiting edit-only mode.--------\nThe following are all the messages you received during the edit mode: \n");
+            for (int i = 0; i < pendingMessagesCount; i++) 
+            {
+                printf("%s\n", pendingMessages[i]);
+            }
+
+            // 清空待显示消息
+            pendingMessagesCount = 0;
+
+        }
+       
     }
     close(client_socket);
     return 0;
+}
+
+void handle_sigint(int sig) {
+   edit_only_mode = !edit_only_mode;  // 切换写模式
+
+    // 如果切换到写模式，显示提示信息
+    if (edit_only_mode) {
+        printf("-----Edit only mode (ctrl+c)--------\nenter your message: \n");
+    } 
+    // else {
+    //     // 如果切换到读模式，显示所有待显示的消息
+    //     //printf("-----Exiting edit-only mode.--------\nThe following are all the messages you received during the edit mode: \n");
+    //     for (int i = 0; i < pendingMessagesCount; i++) {
+    //         printf("%s\n", pendingMessages[i]);
+    //     }
+    //     // 清空待显示消息
+    //     pendingMessagesCount = 0;
+    // }
 }
 
 int creat_client_socket(long * client_socket){
@@ -105,8 +148,15 @@ void *client_recevie(void *socket){
             close(client_socket);
             exit(0);
         }
-
-        printf("%s\n",serveur_reponse);
+        // 如果在写模式，把消息存储到待显示消息中；否则，直接显示消息
+        if (edit_only_mode) {
+            strncpy(pendingMessages[pendingMessagesCount++], serveur_reponse, MESSAGE_SIZE-1);
+            pendingMessages[pendingMessagesCount-1][MESSAGE_SIZE-1] = '\0';  // 确保字符串正确地结束
+        } else {
+            printf("%s\n",serveur_reponse);
+            
+        }
+        
         memset(serveur_reponse, 0, sizeof(serveur_reponse));
     }
     pthread_exit(NULL);
