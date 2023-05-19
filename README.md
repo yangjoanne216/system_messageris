@@ -53,7 +53,9 @@ Nous recommandons d'utiliser 'ctrl+c' directement sur le serveur, tous les clien
 
 [^8]*Merci de ne pas envoyer plus de 100 caractères dans un seul message. 100 est la longueur maximale des messages acceptée, telle que nous l'avons définie dans le programme.*
 
-[^9]*Le code contient des commentaires très détaillés pour vous aider en cas de difficultés à le compiler ou à l'utiliser.*
+[^9]*./serveur et ./client doivent être exécutés dans des terminaux différents, mais tous les terminaux se trouvent dans le même répertoire.*
+
+[^10]*Le code contient des commentaires très détaillés pour vous aider en cas de difficultés à le compiler ou à l'utiliser.*
 
 ## Capture d'écran du programme en cours de fonctionnement
 Le terminal en haut à gauche exécute le serveur
